@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeCycle</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Loading State -->
+    <div id="loading" class="screen">
+      <div class="loader"></div>
+      <p>Loading...</p>
+    </div>
+
+    <!-- Login State -->
+    <div id="login" class="screen hidden">
+      <div class="header">
+        <h1>CodeCycle</h1>
+        <p class="subtitle">LeetCode Spaced Repetition</p>
+      </div>
+      <div class="content">
+        <p class="info">Make sure you're logged into LeetCode, then click below:</p>
+        <input type="text" id="username-input" placeholder="Your LeetCode username" />
+        <button id="connect-btn" class="btn primary">Connect LeetCode</button>
+        <p id="login-error" class="error hidden"></p>
+      </div>
+    </div>
+
+    <!-- Review State -->
+    <div id="review" class="screen hidden">
+      <div class="header">
+        <div class="header-row">
+          <h1>CodeCycle</h1>
+          <span id="progress" class="progress-badge">0/5</span>
+        </div>
+      </div>
+
+      <!-- No Problems -->
+      <div id="no-problems" class="content hidden">
+        <div class="empty-state">
+          <p>No problems due today!</p>
+          <button id="sync-btn" class="btn secondary">Sync from LeetCode</button>
+        </div>
+      </div>
+
+      <!-- Current Problem -->
+      <div id="current-problem" class="content hidden">
+        <div class="problem-card">
+          <div class="problem-header">
+            <span id="problem-title" class="problem-title"></span>
+            <span id="new-badge" class="badge new hidden">New</span>
+          </div>
+          <div class="problem-meta">
+            <span id="problem-difficulty" class="difficulty"></span>
+            <span id="problem-tags" class="tags"></span>
+          </div>
+        </div>
+
+        <a id="open-problem" href="#" target="_blank" class="btn primary">Open on LeetCode</a>
+
+        <div class="rating-section">
+          <p class="rating-label">How did it go?</p>
+          <div class="rating-buttons">
+            <button class="rating-btn failed" data-result="FAILED">
+              <span class="rating-title">Failed</span>
+              <span class="rating-desc">Couldn't solve</span>
+            </button>
+            <button class="rating-btn struggled" data-result="STRUGGLED">
+              <span class="rating-title">Struggled</span>
+              <span class="rating-desc">Solved with difficulty</span>
+            </button>
+            <button class="rating-btn solved" data-result="SOLVED">
+              <span class="rating-title">Solved</span>
+              <span class="rating-desc">Got it with effort</span>
+            </button>
+            <button class="rating-btn instant" data-result="INSTANT">
+              <span class="rating-title">Instant</span>
+              <span class="rating-desc">Remembered it</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed -->
+      <div id="completed" class="content hidden">
+        <div class="completed-state">
+          <div class="celebration">🎉</div>
+          <h2>All Done!</h2>
+          <p>You've completed today's review.</p>
+          <button id="done-btn" class="btn secondary">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

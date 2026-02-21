@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  leetUsername    String   @unique
+  sessionCookie   String
+  csrfToken       String
+  dailyGoal       Int      @default(5)
+  maxNewPerDay    Int      @default(2)
+  defaultInterval Int      @default(7)
+  createdAt       DateTime @default(now())
+
+  progress UserProblemProgress[]
+}
+
+model Problem {
+  id         String    @id @default(uuid())
+  slug       String    @unique
+  title      String
+  difficulty String
+  tags       String[]
+  solvedAt   DateTime?
+
+  progress UserProblemProgress[]
+}
+
+model UserProblemProgress {
+  id           String   @id @default(uuid())
+  userId       String
+  problemId    String
+  lastReviewed DateTime
+  intervalDays Int      @default(1)
+  nextReviewAt DateTime
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
+}
