@@ -61,15 +61,17 @@ export async function GET() {
         existingProgressSlugs.map((p) => p.problem.slug)
       );
 
-      const isFirstSync = reviewedSlugs.size === 0;
+      // Count total problems vs reviewed - if user is new (reviewed < 10), be lenient
+      const totalProblems = await prisma.problem.count();
+      const isNewUser = reviewedSlugs.size < 10 || reviewedSlugs.size < totalProblems * 0.1;
 
       // Fresh problems: not yet in review schedule.
-      // - First-time user (no progress): include any synced problem so today's list fills.
-      // - Otherwise: only problems solved 7+ days ago or with no solvedAt (synced without date).
+      // - New user (few reviewed): include any synced problem so today's list fills.
+      // - Otherwise: only problems solved 7+ days ago or with no solvedAt.
       const freshProblems = await prisma.problem.findMany({
         where: {
           slug: { notIn: Array.from(reviewedSlugs) },
-          ...(isFirstSync
+          ...(isNewUser
             ? {}
             : {
                 OR: [
