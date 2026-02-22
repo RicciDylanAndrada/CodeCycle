@@ -5,6 +5,8 @@
 CodeCycle syncs your solved LeetCode problems and builds a daily review queue using a spaced repetition algorithm. You see problems again at optimal intervals (like Anki flashcards) so patterns stick instead of fading after a few weeks.
 
 ---
+<img width="346" height="426" alt="Screenshot 2026-02-22 at 8 14 34 AM" src="https://github.com/user-attachments/assets/f7a158ed-da4d-49d9-a5b5-63030a77125f" />
+<img width="497" height="627" alt="Screenshot 2026-02-22 at 8 14 50 AM" src="https://github.com/user-attachments/assets/c73f6d6b-22e8-40c1-a90f-26c4e8729e9d" />
 
 ## Summary
 
@@ -72,24 +74,6 @@ sequenceDiagram
     Note over App: Later: API uses cookies server-side only to call LeetCode GraphQL
 ```
 
-### Sync and daily list flow
-
-```mermaid
-flowchart TD
-    A[User clicks Sync] --> B[GET /api/leetcode/solved]
-    B --> C[LeetCode GraphQL: recent AC submissions]
-    C --> D[Upsert Problem table]
-    D --> E[Return count to UI]
-    E --> F[GET /api/review/today]
-    F --> G{UserProblemProgress with nextReviewAt ≤ today}
-    G -->|Due items| H[Add to today list]
-    G -->|Slots left| I[Fresh: Problem not in progress, solved 7+ days ago or first sync]
-    I --> J[Add up to maxNewPerDay]
-    H --> K[Return list capped by dailyGoal]
-    J --> K
-    K --> L[Dashboard shows Today's Review]
-```
-
 ### Spaced repetition (review outcome → next interval)
 
 After you rate a problem, the next review date is computed and stored.
@@ -148,18 +132,6 @@ erDiagram
         datetime nextReviewAt
     }
 ```
-
----
-
-## Draw.io diagrams
-
-Editable diagrams (open in [draw.io](https://app.diagrams.net/) or VS Code with Draw.io extension):
-
-| Diagram | File | Description |
-|--------|------|-------------|
-| System architecture | [docs/diagrams/architecture.drawio](docs/diagrams/architecture.drawio) | Components and data flow |
-| Auth & sync flow | [docs/diagrams/auth-and-sync.drawio](docs/diagrams/auth-and-sync.drawio) | Login and LeetCode sync |
-| Review & scheduling | [docs/diagrams/review-scheduling.drawio](docs/diagrams/review-scheduling.drawio) | Daily list and spaced repetition |
 
 ---
 
@@ -272,4 +244,3 @@ After making changes to extension files:
 
 ---
 
-For full product and technical details, see [PRD.md](PRD.md).
