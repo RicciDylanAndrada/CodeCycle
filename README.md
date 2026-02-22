@@ -165,9 +165,10 @@ Editable diagrams (open in [draw.io](https://app.diagrams.net/) or VS Code with 
 
 ## Tech stack
 
-- **App:** Next.js 16 (App Router), React, TypeScript, Tailwind CSS
+- **App:** Next.js 16 (App Router), React, TypeScript, Tailwind CSS, shadcn/ui
 - **API:** Next.js API routes, server-side LeetCode GraphQL proxy
-- **Data:** Prisma, PostgreSQL (e.g. Neon / Supabase)
+- **Data:** Prisma, PostgreSQL (Supabase)
+- **Extension:** Chrome Manifest V3, vanilla JS
 - **Deploy:** Vercel + hosted Postgres
 
 ---
@@ -196,7 +197,58 @@ Editable diagrams (open in [draw.io](https://app.diagrams.net/) or VS Code with 
    npm run dev
    ```
 
-   Open [http://localhost:3000](http://localhost:3000). Log in with your LeetCode username and session cookies (from browser DevTools after logging into LeetCode), then sync and use Today’s Review.
+   Open [http://localhost:3000](http://localhost:3000). Log in with your LeetCode username and session cookies (from browser DevTools after logging into LeetCode), then sync and use Today's Review.
+
+---
+
+## Chrome Extension
+
+The Chrome extension provides a quick way to review problems without opening the full dashboard.
+
+### Installation
+
+1. Open Chrome and go to `chrome://extensions/`
+2. Enable **Developer mode** (toggle in top right)
+3. Click **Load unpacked**
+4. Select the `extension` folder from this project
+
+### Usage
+
+1. **Log into LeetCode** in your browser first (the extension reads your session cookies)
+2. Click the **CodeCycle** extension icon in Chrome toolbar
+3. Enter your **LeetCode username** and click **Connect LeetCode**
+4. Click **Sync from LeetCode** to import your solved problems
+5. Review problems directly in the popup:
+   - Click **Open on LeetCode** to solve the problem
+   - Rate yourself: Failed / Struggled / Solved / Instant
+   - Next problem appears automatically
+6. Click **Dashboard →** link to open the full web app
+
+### Features
+
+- **One-click auth**: No manual cookie copying - reads from your browser
+- **Quick reviews**: Rate problems without leaving your current tab
+- **Progress tracking**: See how many problems you've completed today
+- **Sync button**: Pull latest solved problems from LeetCode
+- **Japandi design**: Clean, minimal interface with sage green accents
+
+### Extension Files
+
+```
+extension/
+├── manifest.json    # Chrome extension config (Manifest V3)
+├── background.js    # Service worker for API calls
+├── popup.html       # Extension popup UI
+├── popup.css        # Japandi theme styling
+└── popup.js         # Popup logic
+```
+
+### Development
+
+After making changes to extension files:
+1. Go to `chrome://extensions/`
+2. Click the refresh icon (🔄) on CodeCycle
+3. Click the extension to see changes
 
 ---
 
