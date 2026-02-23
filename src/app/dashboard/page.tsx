@@ -120,7 +120,7 @@ const DashboardPage = () => {
             <h1 className="text-3xl font-bold">CodeCycle</h1>
             <p className="text-muted-foreground">Your daily LeetCode review</p>
           </div>
-          <Button variant="ghost" onClick={handleLogout}>
+          <Button variant="ghost" onClick={handleLogout} className="hover:bg-gray-700 hover:text-gray">
             Logout
           </Button>
         </div>

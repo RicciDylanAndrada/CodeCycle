@@ -1,15 +1,21 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 
 const ALGORITHM = "aes-256-gcm";
-const IV_LENGTH = 16;
-const AUTH_TAG_LENGTH = 16;
+const IV_LENGTH = 32;
+const AUTH_TAG_LENGTH = 32;
 
 const getEncryptionKey = (): Buffer => {
   const key = process.env.ENCRYPTION_KEY;
   if (!key) {
     throw new Error("ENCRYPTION_KEY environment variable is not set");
   }
-  return Buffer.from(key, "hex");
+  const keyBuffer = Buffer.from(key, "hex");
+  if (keyBuffer.length !== 32) {
+    throw new RangeError(
+      `ENCRYPTION_KEY must be 32 bytes (64 hex chars) for aes-256-gcm, but got ${keyBuffer.length} bytes.`
+    );
+  }
+  return keyBuffer;
 };
 
 export const encrypt = (text: string): string => {
