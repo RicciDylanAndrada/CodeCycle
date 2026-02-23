@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label";
 interface ReviewData {
   date: string;
   dailyGoal: number;
+  completedToday: number;
   total: number;
-  problems: Array<{
+  remaining: Array<{
     slug: string;
     title: string;
     difficulty: string;
@@ -30,9 +31,18 @@ const DashboardPage = () => {
   const router = useRouter();
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [localSettings, setLocalSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
   const [error, setError] = useState("");
+
+  const settingsChanged = localSettings && settings && (
+    localSettings.dailyGoal !== settings.dailyGoal ||
+    localSettings.maxNewPerDay !== settings.maxNewPerDay ||
+    localSettings.defaultInterval !== settings.defaultInterval
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,6 +64,7 @@ const DashboardPage = () => {
 
         setReviewData(review);
         setSettings(settingsData);
+        setLocalSettings(settingsData);
       } catch {
         setError("Failed to load dashboard");
       } finally {
@@ -88,19 +99,37 @@ const DashboardPage = () => {
     router.push("/login");
   };
 
-  const handleUpdateSettings = async (field: string, value: number) => {
+  const handleSaveSettings = async () => {
+    if (!localSettings) return;
+
+    setSavingSettings(true);
+    setSettingsSaved(false);
+
     try {
       const res = await fetch("/api/review/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [field]: value }),
+        body: JSON.stringify(localSettings),
       });
       if (res.ok) {
         const updated = await res.json();
         setSettings(updated);
+        setLocalSettings(updated);
+        setSettingsSaved(true);
+
+        // Refresh review data with new settings
+        const reviewRes = await fetch("/api/review/today");
+        if (reviewRes.ok) {
+          setReviewData(await reviewRes.json());
+        }
+
+        // Clear "Saved" after 2 seconds
+        setTimeout(() => setSettingsSaved(false), 2000);
       }
     } catch {
-      setError("Failed to update settings");
+      setError("Failed to save settings");
+    } finally {
+      setSavingSettings(false);
     }
   };
 
@@ -135,19 +164,25 @@ const DashboardPage = () => {
           <CardHeader>
             <CardTitle>Today&apos;s Review</CardTitle>
             <CardDescription>
-              {reviewData && reviewData.total > 0
-                ? `You have ${reviewData.total} problems to review`
+              {reviewData && reviewData.remaining.length > 0
+                ? `${reviewData.completedToday}/${reviewData.total} completed · ${reviewData.remaining.length} remaining`
+                : reviewData && reviewData.completedToday > 0
+                ? `All done! ${reviewData.completedToday}/${reviewData.total} completed today`
                 : "No problems due today"}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {reviewData && reviewData.total > 0 ? (
+            {reviewData && reviewData.remaining.length > 0 ? (
               <Button asChild>
-                <Link href="/review">Start Review</Link>
+                <Link href="/review">
+                  {reviewData.completedToday > 0 ? "Continue Review" : "Start Review"}
+                </Link>
               </Button>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Sync your LeetCode problems or check back tomorrow!
+                {reviewData && reviewData.completedToday > 0
+                  ? "Great job! Check back tomorrow."
+                  : "Sync your LeetCode problems or check back tomorrow!"}
               </p>
             )}
           </CardContent>
@@ -160,7 +195,14 @@ const DashboardPage = () => {
           </CardHeader>
           <CardContent>
             <Button variant="secondary" onClick={handleSync} disabled={syncing}>
-              {syncing ? "Syncing..." : "Sync from LeetCode"}
+              {syncing ? (
+                <>
+                  <span className="inline-block w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  Syncing...
+                </>
+              ) : (
+                "Sync from LeetCode"
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -177,7 +219,7 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        {settings && (
+        {localSettings && (
           <Card>
             <CardHeader>
               <CardTitle>Settings</CardTitle>
@@ -186,44 +228,61 @@ const DashboardPage = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <Label>Daily Goal</Label>
-                  <span className="text-sm text-muted-foreground">{settings.dailyGoal} problems</span>
+                  <span className="text-sm text-muted-foreground">{localSettings.dailyGoal} problems</span>
                 </div>
                 <Slider
-                  value={[settings.dailyGoal]}
+                  value={[localSettings.dailyGoal]}
                   min={3}
                   max={15}
                   step={1}
-                  onValueChange={(value) => handleUpdateSettings("dailyGoal", value[0])}
+                  onValueChange={(value) => setLocalSettings({ ...localSettings, dailyGoal: value[0] })}
                 />
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <Label>Max New Per Day</Label>
-                  <span className="text-sm text-muted-foreground">{settings.maxNewPerDay} problems</span>
+                  <span className="text-sm text-muted-foreground">{localSettings.maxNewPerDay} problems</span>
                 </div>
                 <Slider
-                  value={[settings.maxNewPerDay]}
+                  value={[localSettings.maxNewPerDay]}
                   min={1}
                   max={10}
                   step={1}
-                  onValueChange={(value) => handleUpdateSettings("maxNewPerDay", value[0])}
+                  onValueChange={(value) => setLocalSettings({ ...localSettings, maxNewPerDay: value[0] })}
                 />
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <Label>Default Interval</Label>
-                  <span className="text-sm text-muted-foreground">{settings.defaultInterval} days</span>
+                  <span className="text-sm text-muted-foreground">{localSettings.defaultInterval} days</span>
                 </div>
                 <Slider
-                  value={[settings.defaultInterval]}
+                  value={[localSettings.defaultInterval]}
                   min={3}
                   max={14}
                   step={1}
-                  onValueChange={(value) => handleUpdateSettings("defaultInterval", value[0])}
+                  onValueChange={(value) => setLocalSettings({ ...localSettings, defaultInterval: value[0] })}
                 />
               </div>
+
+              <Button
+                onClick={handleSaveSettings}
+                disabled={!settingsChanged || savingSettings}
+                className="w-full"
+              >
+                {savingSettings ? (
+                  <>
+                    <span className="inline-block w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : settingsSaved ? (
+                  "Saved ✓"
+                ) : (
+                  "Save Settings"
+                )}
+              </Button>
             </CardContent>
           </Card>
         )}

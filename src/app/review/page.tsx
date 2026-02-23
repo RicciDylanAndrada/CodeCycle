@@ -21,6 +21,8 @@ const ReviewPage = () => {
   const router = useRouter();
   const [problems, setProblems] = useState<ReviewProblem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [completedToday, setCompletedToday] = useState(0);
+  const [totalProblems, setTotalProblems] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -35,8 +37,10 @@ const ReviewPage = () => {
           return;
         }
         const data = await res.json();
-        setProblems(data.problems);
-        if (data.problems.length === 0) {
+        setProblems(data.remaining || []);
+        setCompletedToday(data.completedToday || 0);
+        setTotalProblems(data.total || 0);
+        if ((data.remaining || []).length === 0) {
           setCompleted(true);
         }
       } catch {
@@ -86,10 +90,16 @@ const ReviewPage = () => {
     }
   };
 
+  const progressDone = completedToday + currentIndex;
+  const progressDisplay = `${progressDone}/${totalProblems}`;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading review...</p>
+        <div className="flex items-center gap-3">
+          <span className="inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="text-muted-foreground">Loading review...</span>
+        </div>
       </div>
     );
   }
@@ -101,7 +111,9 @@ const ReviewPage = () => {
           <CardHeader>
             <div className="text-6xl mb-2">🎉</div>
             <CardTitle>Review Complete!</CardTitle>
-            <CardDescription>Great job! You&apos;ve completed today&apos;s review.</CardDescription>
+            <CardDescription>
+              Great job! You&apos;ve completed {completedToday + problems.length} problems today.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild>
@@ -122,7 +134,7 @@ const ReviewPage = () => {
           <div>
             <h1 className="text-2xl font-bold">Review Session</h1>
             <p className="text-muted-foreground">
-              Problem {currentIndex + 1} of {problems.length}
+              Progress: {progressDisplay}
             </p>
           </div>
           <Button variant="ghost" asChild>
@@ -135,7 +147,7 @@ const ReviewPage = () => {
           <div
             className="bg-primary h-2 rounded-full transition-all"
             style={{
-              width: `${((currentIndex + 1) / problems.length) * 100}%`,
+              width: `${(progressDone / totalProblems) * 100}%`,
             }}
           />
         </div>
@@ -166,7 +178,10 @@ const ReviewPage = () => {
         <ReviewButtons onSubmit={handleSubmit} disabled={submitting} />
 
         {submitting && (
-          <p className="text-center text-muted-foreground">Submitting...</p>
+          <div className="flex items-center justify-center gap-2 text-muted-foreground">
+            <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <span>Submitting...</span>
+          </div>
         )}
       </div>
     </div>

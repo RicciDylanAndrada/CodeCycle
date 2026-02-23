@@ -2,6 +2,8 @@
 
 let problems = [];
 let currentIndex = 0;
+let completedToday = 0;
+let totalProblems = 0;
 let isLoggedIn = false;
 
 // DOM Elements
@@ -46,7 +48,6 @@ function sendMessage(action, data = {}) {
 async function init() {
   showScreen("loading");
 
-  // Check if we have cookies
   const cookies = await sendMessage("getCookies");
 
   if (!cookies) {
@@ -54,7 +55,6 @@ async function init() {
     return;
   }
 
-  // Check if we have a stored username
   const username = await sendMessage("getUsername");
 
   if (!username) {
@@ -62,11 +62,9 @@ async function init() {
     return;
   }
 
-  // Try to get today's review
   const review = await sendMessage("getTodayReview");
 
   if (review.error === "Unauthorized") {
-    // Need to re-authenticate
     await attemptLogin(username, cookies);
     return;
   }
@@ -76,9 +74,10 @@ async function init() {
     return;
   }
 
-  // We're logged in
   isLoggedIn = true;
-  problems = review.problems || [];
+  completedToday = review.completedToday || 0;
+  problems = review.remaining || [];
+  totalProblems = review.total || 0;
   currentIndex = 0;
   showReviewScreen();
 }
@@ -100,13 +99,13 @@ async function attemptLogin(username, cookies) {
     return false;
   }
 
-  // Save username
   await sendMessage("saveUsername", { username });
 
-  // Get today's review
   const review = await sendMessage("getTodayReview");
   isLoggedIn = true;
-  problems = review.problems || [];
+  completedToday = review.completedToday || 0;
+  problems = review.remaining || [];
+  totalProblems = review.total || 0;
   currentIndex = 0;
   showReviewScreen();
   return true;
@@ -121,6 +120,12 @@ function showReviewScreen() {
     elements.noProblems.classList.remove("hidden");
     elements.currentProblem.classList.add("hidden");
     elements.completed.classList.add("hidden");
+
+    // Show completed state if we've done work today
+    if (completedToday > 0) {
+      elements.noProblems.classList.add("hidden");
+      elements.completed.classList.remove("hidden");
+    }
   } else if (currentIndex >= problems.length) {
     elements.noProblems.classList.add("hidden");
     elements.currentProblem.classList.add("hidden");
@@ -135,8 +140,8 @@ function showReviewScreen() {
 
 // Update progress badge
 function updateProgress() {
-  const completed = Math.min(currentIndex, problems.length);
-  elements.progress.textContent = `${completed}/${problems.length}`;
+  const done = completedToday + currentIndex;
+  elements.progress.textContent = `${done}/${totalProblems}`;
 }
 
 // Show current problem
@@ -144,31 +149,27 @@ function showCurrentProblem() {
   const problem = problems[currentIndex];
 
   elements.problemTitle.textContent = problem.title;
-
-  // Difficulty
   elements.problemDifficulty.textContent = problem.difficulty;
   elements.problemDifficulty.className = "difficulty " + problem.difficulty.toLowerCase();
 
-  // Tags
   const tags = problem.tags || [];
   elements.problemTags.textContent = tags.slice(0, 2).join(" · ");
 
-  // New badge
   if (problem.isNew) {
     elements.newBadge.classList.remove("hidden");
   } else {
     elements.newBadge.classList.add("hidden");
   }
 
-  // Open link
   elements.openProblem.href = `https://leetcode.com/problems/${problem.slug}/`;
 }
 
 // Submit rating
-async function submitRating(result) {
+async function submitRating(result, clickedBtn) {
   const problem = problems[currentIndex];
 
-  // Disable buttons
+  // Add loading state to clicked button
+  clickedBtn.classList.add("btn-loading");
   elements.ratingButtons.forEach(btn => btn.disabled = true);
 
   const response = await sendMessage("submitReview", {
@@ -178,7 +179,8 @@ async function submitRating(result) {
     }
   });
 
-  // Re-enable buttons
+  // Remove loading state
+  clickedBtn.classList.remove("btn-loading");
   elements.ratingButtons.forEach(btn => btn.disabled = false);
 
   if (response.error) {
@@ -186,15 +188,15 @@ async function submitRating(result) {
     return;
   }
 
-  // Move to next problem
   currentIndex++;
+  updateProgress();
   showReviewScreen();
 }
 
 // Sync problems
 async function syncProblems() {
   elements.syncBtn.disabled = true;
-  elements.syncBtn.textContent = "Syncing...";
+  elements.syncBtn.innerHTML = '<span class="spinner-inline"></span>Syncing...';
 
   const result = await sendMessage("syncProblems");
 
@@ -206,9 +208,10 @@ async function syncProblems() {
     return;
   }
 
-  // Refresh review
   const review = await sendMessage("getTodayReview");
-  problems = review.problems || [];
+  completedToday = review.completedToday || 0;
+  problems = review.remaining || [];
+  totalProblems = review.total || 0;
   currentIndex = 0;
   showReviewScreen();
 }
@@ -224,7 +227,7 @@ elements.connectBtn.addEventListener("click", async () => {
   }
 
   elements.connectBtn.disabled = true;
-  elements.connectBtn.textContent = "Connecting...";
+  elements.connectBtn.innerHTML = '<span class="spinner-inline"></span>Connecting...';
   elements.loginError.classList.add("hidden");
 
   const cookies = await sendMessage("getCookies");
@@ -248,7 +251,7 @@ elements.connectBtn.addEventListener("click", async () => {
 elements.ratingButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     const result = btn.dataset.result;
-    submitRating(result);
+    submitRating(result, btn);
   });
 });
 
