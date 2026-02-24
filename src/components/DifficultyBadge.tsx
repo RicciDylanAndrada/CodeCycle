@@ -5,10 +5,10 @@ interface DifficultyBadgeProps {
 }
 
 const DifficultyBadge = ({ difficulty }: DifficultyBadgeProps) => {
-  const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-    Easy: "secondary",
-    Medium: "default",
-    Hard: "destructive",
+  const variants: Record<string, "medium" | "easy" | "hard" | "outline"> = {
+    Easy: "easy",
+    Medium: "medium",
+    Hard: "hard",
     Unknown: "outline",
   };
 

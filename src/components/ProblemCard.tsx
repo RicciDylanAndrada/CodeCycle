@@ -26,7 +26,7 @@ const ProblemCard = ({
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="font-medium truncate">{title}</h3>
+              <h3 className="font-bold text-lg">{title}</h3>
               {isNew && <Badge variant="outline">New</Badge>}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
