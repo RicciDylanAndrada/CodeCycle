@@ -138,10 +138,12 @@ function showReviewScreen() {
   }
 }
 
-// Update progress badge
+// Update progress badge (1-indexed: shows current problem number)
 function updateProgress() {
-  const done = completedToday + currentIndex;
-  elements.progress.textContent = `${done}/${totalProblems}`;
+  const current = completedToday + currentIndex + 1;
+  // Cap at total when viewing completed screen
+  const display = Math.min(current, totalProblems);
+  elements.progress.textContent = `${display}/${totalProblems}`;
 }
 
 // Show current problem

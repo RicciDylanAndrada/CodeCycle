@@ -90,8 +90,11 @@ const ReviewPage = () => {
     }
   };
 
-  const progressDone = completedToday + currentIndex;
-  const progressDisplay = `${progressDone}/${totalProblems}`;
+  // 1-indexed: shows current problem number (not completed count)
+  const currentProblemNum = Math.min(completedToday + currentIndex + 1, totalProblems);
+  const progressDisplay = `${currentProblemNum}/${totalProblems}`;
+  // For progress bar, use actual completion percentage
+  const progressPercent = ((completedToday + currentIndex) / totalProblems) * 100;
 
   if (loading) {
     return (
@@ -147,7 +150,7 @@ const ReviewPage = () => {
           <div
             className="bg-primary h-2 rounded-full transition-all"
             style={{
-              width: `${(progressDone / totalProblems) * 100}%`,
+              width: `${progressPercent}%`,
             }}
           />
         </div>

@@ -27,82 +27,89 @@ export async function GET() {
       },
     });
 
-    // Problems due but NOT yet reviewed today
-    const dueProblems = await prisma.userProblemProgress.findMany({
+    // Early return if daily goal already met
+    if (completedToday >= user.dailyGoal) {
+      return NextResponse.json({
+        date: today.toISOString().split("T")[0],
+        dailyGoal: user.dailyGoal,
+        completedToday,
+        remaining: [],
+        total: completedToday,
+      });
+    }
+
+    // Get all reviewed slugs first (needed for never-reviewed query)
+    const existingProgressSlugs = await prisma.userProblemProgress.findMany({
+      where: { userId: user.id },
+      select: { problem: { select: { slug: true } } },
+    });
+    const reviewedSlugs = new Set(
+      existingProgressSlugs.map((p) => p.problem.slug)
+    );
+
+    // Calculate max never-reviewed (capped at 50% of daily goal)
+    const maxNeverReviewed = Math.min(
+      user.maxNewPerDay,
+      Math.floor(user.dailyGoal / 2)
+    );
+
+    // Fetch never-reviewed problems FIRST (guaranteed slots)
+    const neverReviewedProblems = await prisma.problem.findMany({
       where: {
-        userId: user.id,
-        nextReviewAt: { lte: today },
-        lastReviewed: { lt: today },
+        slug: { notIn: Array.from(reviewedSlugs) },
       },
-      include: {
-        problem: true,
-      },
-      orderBy: {
-        nextReviewAt: "asc",
-      },
+      orderBy: [
+        { solvedAt: "asc" },
+        { slug: "asc" },
+      ],
+      take: maxNeverReviewed,
     });
 
-    const reviewList: ReviewItem[] = dueProblems.map((p) => ({
-      id: p.id,
-      slug: p.problem.slug,
-      title: p.problem.title,
-      difficulty: p.problem.difficulty,
-      tags: p.problem.tags,
-      lastReviewed: p.lastReviewed,
-      intervalDays: p.intervalDays,
-      isNew: false,
+    // Build the review list starting with never-reviewed
+    const reviewList: ReviewItem[] = neverReviewedProblems.map((problem) => ({
+      id: null,
+      slug: problem.slug,
+      title: problem.title,
+      difficulty: problem.difficulty,
+      tags: problem.tags,
+      lastReviewed: null,
+      intervalDays: 0,
+      isNew: true,
     }));
 
-    // Fresh imports (never reviewed)
+    // Calculate remaining slots for due reviews
     const remainingSlots = user.dailyGoal - completedToday - reviewList.length;
-    const maxNew = Math.min(remainingSlots, user.maxNewPerDay);
 
-    if (maxNew > 0) {
-      const cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - user.defaultInterval);
+    // Fetch due reviews to fill remaining slots
+    const dueProblems = remainingSlots > 0
+      ? await prisma.userProblemProgress.findMany({
+          where: {
+            userId: user.id,
+            nextReviewAt: { lte: today },
+            lastReviewed: { lt: today },
+          },
+          include: {
+            problem: true,
+          },
+          orderBy: {
+            nextReviewAt: "asc",
+          },
+          take: remainingSlots,
+        })
+      : [];
 
-      const existingProgressSlugs = await prisma.userProblemProgress.findMany({
-        where: { userId: user.id },
-        select: { problem: { select: { slug: true } } },
+    // Add due reviews to the list
+    for (const p of dueProblems) {
+      reviewList.push({
+        id: p.id,
+        slug: p.problem.slug,
+        title: p.problem.title,
+        difficulty: p.problem.difficulty,
+        tags: p.problem.tags,
+        lastReviewed: p.lastReviewed,
+        intervalDays: p.intervalDays,
+        isNew: false,
       });
-      const reviewedSlugs = new Set(
-        existingProgressSlugs.map((p) => p.problem.slug)
-      );
-
-      const totalProblems = await prisma.problem.count();
-      const isNewUser = reviewedSlugs.size < 10 || reviewedSlugs.size < totalProblems * 0.1;
-
-      const freshProblems = await prisma.problem.findMany({
-        where: {
-          slug: { notIn: Array.from(reviewedSlugs) },
-          ...(isNewUser
-            ? {}
-            : {
-                OR: [
-                  { solvedAt: { lte: cutoffDate } },
-                  { solvedAt: null },
-                ],
-              }),
-        },
-        orderBy: [
-          { solvedAt: "asc" },
-          { slug: "asc" },
-        ],
-        take: maxNew,
-      });
-
-      for (const problem of freshProblems) {
-        reviewList.push({
-          id: null,
-          slug: problem.slug,
-          title: problem.title,
-          difficulty: problem.difficulty,
-          tags: problem.tags,
-          lastReviewed: null,
-          intervalDays: 0,
-          isNew: true,
-        });
-      }
     }
 
     // Calculate total (never show "4/2" if exceeded goal)
