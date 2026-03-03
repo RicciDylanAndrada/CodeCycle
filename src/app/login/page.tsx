@@ -67,26 +67,26 @@ const LoginPage = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <ol className="space-y-3 text-sm text-muted-foreground">
+              <ol className="space-y-3 text-sm text-white text-muted-foreground">
                 <li className="flex gap-3">
                   <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">1</span>
-                  <span>Go to <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">leetcode.com</a> and make sure you&apos;re logged in</span>
+                  <span>Go to <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">leetcode.com</a> and make sure you&apos;re logged in</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">2</span>
-                  <span>Open DevTools: <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">F12</kbd> or <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">Cmd+Option+I</kbd></span>
+                  <span>Open DevTools: <kbd className="bg-gray-600 px-1.5 py-0.5 rounded text-xs">F12</kbd> or <kbd className="bg-gray-600 px-1.5 py-0.5 rounded text-xs">Cmd+Option+I</kbd></span>
                 </li>
                 <li className="flex gap-3">
                   <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">3</span>
-                  <span>Go to <strong>Application</strong> → <strong>Cookies</strong> → <strong>https://leetcode.com</strong></span>
+                  <span> Go to <strong>Application</strong> → <strong>Cookies</strong> → <strong>https://leetcode.com</strong></span>
                 </li>
                 <li className="flex gap-3">
                   <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">4</span>
-                  <span>Copy <code className="bg-muted px-1.5 py-0.5 rounded text-xs">LEETCODE_SESSION</code> value</span>
+                  <span>Copy <code className="bg-gray-600 px-1.5 py-0.5 rounded text-xs">LEETCODE_SESSION</code> value</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">5</span>
-                  <span>Copy <code className="bg-muted px-1.5 py-0.5 rounded text-xs">csrftoken</code> value</span>
+                  <span>Copy <code className="bg-gray-600 px-1.5 py-0.5 rounded text-xs">csrftoken</code> value</span>
                 </li>
               </ol>
             </CardContent>
@@ -108,6 +108,7 @@ const LoginPage = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="your_username"
+                  className="text-white font-mono"
                   required
                 />
               </div>
@@ -118,7 +119,7 @@ const LoginPage = () => {
                   id="sessionCookie"
                   value={sessionCookie}
                   onChange={(e) => setSessionCookie(e.target.value)}
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+                  className="text-white flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
                   placeholder="Paste your LEETCODE_SESSION cookie value here..."
                   required
                 />
@@ -131,15 +132,15 @@ const LoginPage = () => {
                   type="text"
                   value={csrfToken}
                   onChange={(e) => setCsrfToken(e.target.value)}
-                  className="font-mono"
+                  className="text-white font-mono"
                   placeholder="Paste your csrftoken cookie value here..."
                   required
                 />
               </div>
 
               {error && (
-                <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg text-sm">
-                  {error}
+                <div className="text-center text-red-500 bg-red-100 p-1 border border-red-500 text-sm">              
+                    {error}
                 </div>
               )}
 

@@ -28,7 +28,7 @@ const TopicAccordion = ({ topic, problems }: TopicAccordionProps) => {
       <AccordionItem value={topic}>
         <AccordionTrigger className="hover:no-underline">
           <div className="flex items-center gap-3">
-            <span className="font-medium">{topic}</span>
+            <span className="font-medium text-lg text-primary">{topic}</span>
             <Badge variant="secondary">{problems.length}</Badge>
           </div>
         </AccordionTrigger>
@@ -48,6 +48,6 @@ const TopicAccordion = ({ topic, problems }: TopicAccordionProps) => {
       </AccordionItem>
     </Accordion>
   );
-};
+}; 
 
 export default TopicAccordion;

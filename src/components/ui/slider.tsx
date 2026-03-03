@@ -5,14 +5,19 @@ import { Slider as SliderPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+interface SliderProps extends React.ComponentProps<typeof SliderPrimitive.Root> {
+  onValueCommit?: (value: number[]) => void;
+}
+
 function Slider({
   className,
   defaultValue,
   value,
   min = 0,
   max = 100,
+  onValueCommit,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root>) {
+}: SliderProps) {
   const _values = React.useMemo(
     () =>
       Array.isArray(value)
@@ -34,6 +39,7 @@ function Slider({
         "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
         className
       )}
+      onValueCommit={onValueCommit}
       {...props}
     >
       <SliderPrimitive.Track

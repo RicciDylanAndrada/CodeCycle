@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import Setting from "@/components/Setting";
+import ModeToggle from "@/components/ThemeToggle";
 
 interface ReviewData {
   date: string;
@@ -106,8 +108,12 @@ const DashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
+          <h1 className="text-5xl text-primaryfont-bold">CodeCycle</h1>
+        <div className="flex items-center gap-3">
+          <span className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <span className="text-secondary text-muted-foreground text-xl">Loading Your Dashboard...</span>
+        </div>
       </div>
     );
   }
@@ -120,6 +126,8 @@ const DashboardPage = () => {
             <h1 className="text-3xl font-bold">CodeCycle</h1>
             <p className="text-muted-foreground">Your daily LeetCode review</p>
           </div>
+          
+          <ModeToggle />
           <Button variant="ghost" onClick={handleLogout} className="hover:bg-gray-700 hover:text-gray">
             Logout
           </Button>
@@ -159,7 +167,7 @@ const DashboardPage = () => {
             <CardDescription>Fetch your solved problems from LeetCode</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" onClick={handleSync} disabled={syncing}>
+            <Button variant="default" onClick={handleSync} disabled={syncing}>
               {syncing ? "Syncing..." : "Sync from LeetCode"}
             </Button>
           </CardContent>
@@ -171,7 +179,7 @@ const DashboardPage = () => {
             <CardDescription>View all your problems organized by topic</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="secondary" asChild>
+            <Button variant="default" asChild>
               <Link href="/browse">Browse All</Link>
             </Button>
           </CardContent>

@@ -6,17 +6,15 @@
 
 :root {
   /* Japandi color palette */
-  --bg-primary: #FAF8F5;
+  --bg-primary: rgba(40, 40, 40, 0.664); /* Dark charcoal for main background */
   --bg-secondary: #F0EDE8;
-  --bg-card: rgba(255, 255, 255, 0.7);
-  --text-primary: #2D2A26;
+  --bg-card: rgb(80, 79, 79); /* Slightly lighter than primary for cards */
+  --text-primary: #F0EDE8;
   --text-secondary: #7A756D;
   --text-muted: #A8A299;
-  --accent: #5B8C5A;
-  --accent-light: #E8F0E8;
   --accent-hover: #4A7349;
-  --border: rgba(45, 42, 38, 0.08);
-  --shadow: rgba(45, 42, 38, 0.08);
+  --border: rgb(40, 40, 40);
+  --shadow: rgb(40, 40, 40);
 
   /* Difficulty colors - muted Japandi tones */
   --easy: #5B8C5A;
@@ -31,7 +29,7 @@ body {
   width: 340px;
   min-height: 200px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background-color: #1a1a1a;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
 }

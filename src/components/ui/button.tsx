@@ -19,6 +19,11 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        /* Custom variants for review buttons */
+        hard: "border border-red-500 hover:bg-red-500/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:text-white",
+        medium: "border border-yellow-500 hover:bg-yellow-500/90 dark:focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:text-white",
+        easy: "border border-green-500 hover:bg-green-500/90 dark:focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:text-white",
+        lightwork: " border border-blue-500 hover:bg-blue-500 dark:hover:bg-blue-500/80 dark:focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:text-white",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

@@ -12,7 +12,7 @@ const DifficultyBadge = ({ difficulty }: DifficultyBadgeProps) => {
     Unknown: "outline",
   };
 
-  const variant = variants[difficulty] || "outline";
+  const variant = variants[difficulty];
 
   return <Badge variant={variant}>{difficulty}</Badge>;
 };

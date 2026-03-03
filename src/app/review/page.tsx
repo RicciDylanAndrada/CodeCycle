@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import ProblemCard from "@/components/ProblemCard";
 import ReviewButtons from "@/components/ReviewButtons";
+import ModeToggle from "@/components/ThemeToggle";
 
 interface ReviewProblem {
   id: string | null;
@@ -88,8 +89,12 @@ const ReviewPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading review...</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
+          <h1 className="text-5xl font-bold text-primary">CodeCycle</h1>
+        <div className="flex items-center gap-3">
+          <span className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <span className="text-secondary text-muted-foreground text-xl">Loading Your Review...</span>
+        </div>
       </div>
     );
   }
@@ -116,20 +121,21 @@ const ReviewPage = () => {
   const currentProblem = problems[currentIndex];
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Review Session</h1>
-            <p className="text-muted-foreground">
-              Problem {currentIndex + 1} of {problems.length}
-            </p>
-          </div>
-          <Button variant="ghost" asChild>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-4 mb-4 flex items-center justify-between">
+      <h1 className="text-3xl font-bold text-primary"> CodeCycle </h1>
+      <ModeToggle />
+      <Button variant="default" asChild>
             <Link href="/dashboard">Exit</Link>
           </Button>
+    </div>
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="flex justify-between items-center p-2">
+            <h1 className="text-2xl font-bold text-primary">Review Session</h1>
+            <p className="text-muted-foreground">
+              {currentIndex + 1} / {problems.length}
+            </p>
         </div>
-
         {/* Progress Bar */}
         <div className="w-full bg-secondary rounded-full h-2">
           <div
@@ -139,6 +145,13 @@ const ReviewPage = () => {
             }}
           />
         </div>
+
+        <div className="text-sm text-muted-foreground flex justify-center items-center">
+            <span>
+              Open the problem on LeetCode and try to solve it (or recall the solution).
+              Then rate how it went:
+            </span>
+          </div>
 
         {error && (
           <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg">
@@ -153,15 +166,6 @@ const ReviewPage = () => {
           tags={currentProblem.tags}
           isNew={currentProblem.isNew}
         />
-
-        <Card>
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">
-              Open the problem on LeetCode and try to solve it (or recall the solution).
-              Then rate how it went:
-            </p>
-          </CardContent>
-        </Card>
 
         <ReviewButtons onSubmit={handleSubmit} disabled={submitting} />
 

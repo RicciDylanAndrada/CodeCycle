@@ -12,38 +12,38 @@ const ReviewButtons = ({ onSubmit, disabled = false }: ReviewButtonsProps) => {
     {
       result: "FAILED" as const,
       label: "Failed",
-      description: "Couldn't solve it",
-      variant: "destructive" as const,
+      description: "Will review again soon",
+      variant: "hard" as const,
     },
     {
       result: "STRUGGLED" as const,
       label: "Struggled",
-      description: "Solved with difficulty",
-      variant: "secondary" as const,
+      description: "Needs reinforcement",
+      variant: "medium" as const,
     },
     {
       result: "SOLVED" as const,
       label: "Solved",
-      description: "Got it with effort",
-      variant: "default" as const,
+      description: "Good recall",
+      variant: "easy" as const,
     },
     {
       result: "INSTANT" as const,
       label: "Instant",
-      description: "Remembered immediately",
-      variant: "outline" as const,
+      description: "Strong Memory",
+      variant: "lightwork" as const,
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="flex justify-between items-center gap-4">
       {buttons.map(({ result, label, description, variant }) => (
         <Button
           key={result}
           onClick={() => onSubmit(result)}
           disabled={disabled}
           variant={variant}
-          className="h-auto p-4 flex flex-col items-start"
+          className="h-30 w-40 cursor-pointer p-4 flex flex-col items-center justify-center gap-1"
           aria-label={`Mark as ${label}: ${description}`}
         >
           <span className="font-semibold">{label}</span>
