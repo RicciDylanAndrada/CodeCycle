@@ -193,7 +193,7 @@ const DashboardPage = () => {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <Label>Daily Goal</Label>
+                  <Label className="text-muted-foreground">Daily Goal</Label>
                   <span className="text-sm text-muted-foreground">{settings.dailyGoal} problems</span>
                 </div>
                 <Slider
@@ -207,7 +207,7 @@ const DashboardPage = () => {
 
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <Label>Max New Per Day</Label>
+                  <Label className="text-muted-foreground">Max New Per Day</Label>
                   <span className="text-sm text-muted-foreground">{settings.maxNewPerDay} problems</span>
                 </div>
                 <Slider
@@ -221,7 +221,7 @@ const DashboardPage = () => {
 
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <Label>Default Interval</Label>
+                  <Label className="text-muted-foreground">Default Interval</Label>
                   <span className="text-sm text-muted-foreground">{settings.defaultInterval} days</span>
                 </div>
                 <Slider
