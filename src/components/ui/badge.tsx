@@ -20,7 +20,7 @@ const badgeVariants = cva(
         link: "text-primary underline-offset-4 [a&]:hover:underline",
         /* Custom badge colors for browse page */
         easy: "bg-green-500 text-black [a&]:hover:bg-green-600",
-        medium: "bg-yellow-500 text-black [a&]:hover:bg-yellow-600",
+        medium: "bg-yellow-300 text-muted-foreground [a&]:hover:bg-yellow-600",
         hard: "bg-red-500 text-black [a&]:hover:bg-red-600",
       },
     },

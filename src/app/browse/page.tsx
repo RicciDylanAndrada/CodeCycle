@@ -57,7 +57,6 @@ const BrowsePage = () => {
     fetchProblems();
   }, [router]);
 
-  /* ---------------- FILTER OPTIONS ---------------- */
 
   const allTags = new Set<string>();
   const allDifficulties = new Set<string>();
@@ -83,23 +82,22 @@ const BrowsePage = () => {
     })),
   ];
 
-  /* ---------------- FILTER LOGIC ---------------- */
 
   const difficultyFilters = selectedFilters.filter((filter) =>
-  allDifficulties.has(filter)
-);
+    allDifficulties.has(filter)
+  );
 
-const tagFilters = selectedFilters.filter((filter) =>
-  allTags.has(filter)
-);
+  const tagFilters = selectedFilters.filter((filter) =>
+    allTags.has(filter)
+  );
 
-const filteredProblems =
-  selectedFilters.length === 0
-    ? problems
-    : problems.filter((problem) => {
-        const difficultyMatch =
-          difficultyFilters.length === 0 ||
-          difficultyFilters.includes(problem.difficulty.toLowerCase());
+  const filteredProblems =
+    selectedFilters.length === 0
+      ? problems
+      : problems.filter((problem) => {
+         const difficultyMatch =
+           difficultyFilters.length === 0 ||
+           difficultyFilters.includes(problem.difficulty.toLowerCase());
 
         const tagMatch =
           tagFilters.length === 0 ||
@@ -110,7 +108,6 @@ const filteredProblems =
         return difficultyMatch && tagMatch;
       });
 
-  /* ---------------- GROUP BY TOPIC ---------------- */
 
   const problemsByTopic: Record<string, Problem[]> = {};
 
@@ -131,7 +128,7 @@ const filteredProblems =
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
         <h1 className="text-5xl font-bold text-primary">CodeCycle</h1>
         <div className="flex items-center gap-3">
-          <span className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <span className="w-6 h-6 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
           <span className="text-secondary-foreground text-xl">
             Loading Your Problems...
           </span>

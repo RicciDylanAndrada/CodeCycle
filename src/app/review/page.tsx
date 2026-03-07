@@ -22,6 +22,8 @@ const ReviewPage = () => {
   const router = useRouter();
   const [problems, setProblems] = useState<ReviewProblem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [completedToday, setCompletedToday] = useState(0);
+  const [totalProblems, setTotalProblems] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -36,8 +38,12 @@ const ReviewPage = () => {
           return;
         }
         const data = await res.json();
-        setProblems(data.problems);
-        if (data.problems.length === 0) {
+
+        setProblems(data.remaining || []);
+        setCompletedToday(data.completedToday || 0);
+        setTotalProblems(data.total || 0);
+
+        if ((data.remaining || []).length === 0) {
           setCompleted(true);
         }
       } catch {
@@ -87,13 +93,21 @@ const ReviewPage = () => {
     }
   };
 
+  // 1-indexed: shows current problem number (not completed count)
+  const currentProblemNum = Math.min(completedToday + currentIndex + 1, totalProblems);
+  const progressDisplay = `${currentProblemNum}/${totalProblems}`;
+  // For progress bar, use actual completion percentage
+  const progressPercent = ((completedToday + currentIndex) / totalProblems) * 100;
+
+
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
-          <h1 className="text-5xl font-bold text-primary">CodeCycle</h1>
+          <h1 className="text-5xl text-primaryfont-bold">CodeCycle</h1>
         <div className="flex items-center gap-3">
-          <span className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          <span className="text-secondary text-muted-foreground text-xl">Loading Your Review...</span>
+          <span className="w-6 h-6 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
+          <span className="text-muted-foreground text-xl">Loading Your Review...</span>
         </div>
       </div>
     );
@@ -106,7 +120,9 @@ const ReviewPage = () => {
           <CardHeader>
             <div className="text-6xl mb-2">🎉</div>
             <CardTitle>Review Complete!</CardTitle>
-            <CardDescription>Great job! You&apos;ve completed today&apos;s review.</CardDescription>
+            <CardDescription>
+              Great job! You&apos;ve completed {completedToday + problems.length} problems today.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild>
@@ -120,7 +136,7 @@ const ReviewPage = () => {
 
   const currentProblem = problems[currentIndex];
 
-  return (
+   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-4 mb-4 flex items-center justify-between">
       <h1 className="text-3xl font-bold text-primary"> CodeCycle </h1>
