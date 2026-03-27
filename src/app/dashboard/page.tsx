@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 
@@ -24,7 +30,6 @@ interface ReviewData {
 interface Settings {
   dailyGoal: number;
   maxNewPerDay: number;
-  defaultInterval: number;
 }
 
 const DashboardPage = () => {
@@ -38,11 +43,11 @@ const DashboardPage = () => {
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [error, setError] = useState("");
 
-  const settingsChanged = localSettings && settings && (
-    localSettings.dailyGoal !== settings.dailyGoal ||
-    localSettings.maxNewPerDay !== settings.maxNewPerDay ||
-    localSettings.defaultInterval !== settings.defaultInterval
-  );
+  const settingsChanged =
+    localSettings &&
+    settings &&
+    (localSettings.dailyGoal !== settings.dailyGoal ||
+      localSettings.maxNewPerDay !== settings.maxNewPerDay);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -167,15 +172,17 @@ const DashboardPage = () => {
               {reviewData && reviewData.remaining.length > 0
                 ? `${reviewData.completedToday}/${reviewData.total} completed · ${reviewData.remaining.length} remaining`
                 : reviewData && reviewData.completedToday > 0
-                ? `All done! ${reviewData.completedToday}/${reviewData.total} completed today`
-                : "No problems due today"}
+                  ? `All done! ${reviewData.completedToday}/${reviewData.total} completed today`
+                  : "No problems due today"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {reviewData && reviewData.remaining.length > 0 ? (
               <Button asChild>
                 <Link href="/review">
-                  {reviewData.completedToday > 0 ? "Continue Review" : "Start Review"}
+                  {reviewData.completedToday > 0
+                    ? "Continue Review"
+                    : "Start Review"}
                 </Link>
               </Button>
             ) : (
@@ -191,7 +198,9 @@ const DashboardPage = () => {
         <Card>
           <CardHeader>
             <CardTitle>Sync Problems</CardTitle>
-            <CardDescription>Fetch your solved problems from LeetCode</CardDescription>
+            <CardDescription>
+              Fetch your solved problems from LeetCode
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="secondary" onClick={handleSync} disabled={syncing}>
@@ -210,7 +219,9 @@ const DashboardPage = () => {
         <Card>
           <CardHeader>
             <CardTitle>Browse Problems</CardTitle>
-            <CardDescription>View all your problems organized by topic</CardDescription>
+            <CardDescription>
+              View all your problems organized by topic
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="secondary" asChild>
@@ -228,42 +239,39 @@ const DashboardPage = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <Label>Daily Goal</Label>
-                  <span className="text-sm text-muted-foreground">{localSettings.dailyGoal} problems</span>
+                  <span className="text-sm text-muted-foreground">
+                    {localSettings.dailyGoal} problems
+                  </span>
                 </div>
                 <Slider
                   value={[localSettings.dailyGoal]}
                   min={3}
                   max={15}
                   step={1}
-                  onValueChange={(value) => setLocalSettings({ ...localSettings, dailyGoal: value[0] })}
+                  onValueChange={(value) =>
+                    setLocalSettings({ ...localSettings, dailyGoal: value[0] })
+                  }
                 />
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <Label>Max New Per Day</Label>
-                  <span className="text-sm text-muted-foreground">{localSettings.maxNewPerDay} problems</span>
+                  <span className="text-sm text-muted-foreground">
+                    {localSettings.maxNewPerDay} problems
+                  </span>
                 </div>
                 <Slider
                   value={[localSettings.maxNewPerDay]}
                   min={1}
                   max={10}
                   step={1}
-                  onValueChange={(value) => setLocalSettings({ ...localSettings, maxNewPerDay: value[0] })}
-                />
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <Label>Default Interval</Label>
-                  <span className="text-sm text-muted-foreground">{localSettings.defaultInterval} days</span>
-                </div>
-                <Slider
-                  value={[localSettings.defaultInterval]}
-                  min={3}
-                  max={14}
-                  step={1}
-                  onValueChange={(value) => setLocalSettings({ ...localSettings, defaultInterval: value[0] })}
+                  onValueChange={(value) =>
+                    setLocalSettings({
+                      ...localSettings,
+                      maxNewPerDay: value[0],
+                    })
+                  }
                 />
               </div>
 

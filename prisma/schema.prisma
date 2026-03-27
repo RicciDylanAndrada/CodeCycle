@@ -15,7 +15,6 @@ model User {
   csrfToken       String
   dailyGoal       Int      @default(5)
   maxNewPerDay    Int      @default(2)
-  defaultInterval Int      @default(7)
   createdAt       DateTime @default(now())
 
   progress UserProblemProgress[]

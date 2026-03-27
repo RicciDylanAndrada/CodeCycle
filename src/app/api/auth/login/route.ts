@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       path: "/",
     });
 
-    return NextResponse.json({ success: true, username: user.leetUsername });
+    return NextResponse.json({ success: true, username: user.leetUsername, userId: user.id });
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

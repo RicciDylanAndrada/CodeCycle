@@ -9,7 +9,6 @@ export async function GET() {
     return NextResponse.json({
       dailyGoal: user.dailyGoal,
       maxNewPerDay: user.maxNewPerDay,
-      defaultInterval: user.defaultInterval,
     });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
@@ -26,12 +25,11 @@ export async function PUT(request: NextRequest) {
   try {
     const user = await requireAuth();
     const body = await request.json();
-    const { dailyGoal, maxNewPerDay, defaultInterval } = body;
+    const { dailyGoal, maxNewPerDay } = body;
 
     const updates: {
       dailyGoal?: number;
       maxNewPerDay?: number;
-      defaultInterval?: number;
     } = {};
 
     if (dailyGoal !== undefined) {
@@ -54,16 +52,6 @@ export async function PUT(request: NextRequest) {
       updates.maxNewPerDay = maxNewPerDay;
     }
 
-    if (defaultInterval !== undefined) {
-      if (defaultInterval < 1 || defaultInterval > 30) {
-        return NextResponse.json(
-          { error: "defaultInterval must be between 1 and 30" },
-          { status: 400 }
-        );
-      }
-      updates.defaultInterval = defaultInterval;
-    }
-
     if (Object.keys(updates).length === 0) {
       return NextResponse.json(
         { error: "No valid fields to update" },
@@ -79,7 +67,6 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       dailyGoal: updatedUser.dailyGoal,
       maxNewPerDay: updatedUser.maxNewPerDay,
-      defaultInterval: updatedUser.defaultInterval,
     });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {

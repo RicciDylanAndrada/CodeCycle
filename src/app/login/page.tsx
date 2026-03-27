@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -43,114 +40,127 @@ const LoginPage = () => {
     }
   };
 
+  const inputClasses =
+    "w-full px-4 py-3.5 bg-white/90 backdrop-blur-sm border border-black/[0.06] rounded-xl text-[#2D2A26] text-sm shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#A8A299] focus:outline-none focus:border-[#5B8C5A] focus:shadow-[0_0_0_3px_rgba(91,140,90,0.15),inset_0_1px_3px_rgba(0,0,0,0.04)]";
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-8">
-      <div className="w-full max-w-lg space-y-6">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold">CodeCycle</h1>
-          <p className="text-muted-foreground mt-2">LeetCode Spaced Repetition Companion</p>
+    <div className="min-h-screen bg-gradient-to-b from-[#FAF8F5] to-[#F0EDE8] flex items-center justify-center p-6">
+      <div className="w-full max-w-lg space-y-5">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <Link href="/" className="text-3xl font-semibold tracking-tight text-[#2D2A26]" aria-label="CodeCycle home">
+            CodeCycle
+          </Link>
+          <p className="text-sm text-[#7A756D]">LeetCode Spaced Repetition Companion</p>
         </div>
 
+        {/* Instructions */}
         {showInstructions && (
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-lg">How to get your LeetCode cookies</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowInstructions(false)}
-                  aria-label="Close instructions"
-                >
-                  ✕
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ol className="space-y-3 text-sm text-muted-foreground">
-                <li className="flex gap-3">
-                  <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">1</span>
-                  <span>Go to <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">leetcode.com</a> and make sure you&apos;re logged in</span>
+          <div className="rounded-2xl border border-black/[0.06] bg-white/70 backdrop-blur-xl p-5 shadow-sm shadow-[#2D2A26]/[0.04]">
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-base font-semibold text-[#2D2A26]">How to get your LeetCode cookies</h2>
+              <button
+                onClick={() => setShowInstructions(false)}
+                className="text-[#A8A299] hover:text-[#7A756D] text-lg leading-none transition-colors"
+                aria-label="Close instructions"
+                tabIndex={0}
+              >
+                &times;
+              </button>
+            </div>
+            <ol className="space-y-3 text-sm text-[#7A756D]">
+              {[
+                <>Go to <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="text-[#5B8C5A] hover:underline font-medium">leetcode.com</a> and make sure you&apos;re logged in</>,
+                <>Open DevTools: <kbd className="bg-[#F0EDE8] px-1.5 py-0.5 rounded text-xs font-mono">F12</kbd> or <kbd className="bg-[#F0EDE8] px-1.5 py-0.5 rounded text-xs font-mono">Cmd+Option+I</kbd></>,
+                <>Go to <strong className="text-[#2D2A26]">Application</strong> &rarr; <strong className="text-[#2D2A26]">Cookies</strong> &rarr; <strong className="text-[#2D2A26]">https://leetcode.com</strong></>,
+                <>Copy <code className="bg-[#F0EDE8] px-1.5 py-0.5 rounded text-xs font-mono">LEETCODE_SESSION</code> value</>,
+                <>Copy <code className="bg-[#F0EDE8] px-1.5 py-0.5 rounded text-xs font-mono">csrftoken</code> value</>,
+              ].map((content, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="bg-[#5B8C5A] text-white font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">
+                    {i + 1}
+                  </span>
+                  <span>{content}</span>
                 </li>
-                <li className="flex gap-3">
-                  <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">2</span>
-                  <span>Open DevTools: <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">F12</kbd> or <kbd className="bg-muted px-1.5 py-0.5 rounded text-xs">Cmd+Option+I</kbd></span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">3</span>
-                  <span>Go to <strong>Application</strong> → <strong>Cookies</strong> → <strong>https://leetcode.com</strong></span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">4</span>
-                  <span>Copy <code className="bg-muted px-1.5 py-0.5 rounded text-xs">LEETCODE_SESSION</code> value</span>
-                </li>
-                <li className="flex gap-3">
-                  <span className="bg-primary text-primary-foreground font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs">5</span>
-                  <span>Copy <code className="bg-muted px-1.5 py-0.5 rounded text-xs">csrftoken</code> value</span>
-                </li>
-              </ol>
-            </CardContent>
-          </Card>
+              ))}
+            </ol>
+          </div>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Connect your LeetCode</CardTitle>
-            <CardDescription>Enter your LeetCode credentials to get started</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">LeetCode Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="your_username"
-                  required
-                />
-              </div>
+        {/* Login Form */}
+        <div className="rounded-2xl border border-black/[0.06] bg-white/70 backdrop-blur-xl p-5 shadow-sm shadow-[#2D2A26]/[0.04]">
+          <h2 className="text-base font-semibold text-[#2D2A26] mb-1">Connect your LeetCode</h2>
+          <p className="text-sm text-[#7A756D] mb-5">Enter your LeetCode credentials to get started.</p>
 
-              <div className="space-y-2">
-                <Label htmlFor="sessionCookie">LEETCODE_SESSION Cookie</Label>
-                <textarea
-                  id="sessionCookie"
-                  value={sessionCookie}
-                  onChange={(e) => setSessionCookie(e.target.value)}
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
-                  placeholder="Paste your LEETCODE_SESSION cookie value here..."
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label htmlFor="username" className="text-sm font-medium text-[#2D2A26]">
+                LeetCode Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="your_username"
+                required
+                className={inputClasses}
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="csrfToken">csrftoken Cookie</Label>
-                <Input
-                  id="csrfToken"
-                  type="text"
-                  value={csrfToken}
-                  onChange={(e) => setCsrfToken(e.target.value)}
-                  className="font-mono"
-                  placeholder="Paste your csrftoken cookie value here..."
-                  required
-                />
-              </div>
+            <div className="space-y-1.5">
+              <label htmlFor="sessionCookie" className="text-sm font-medium text-[#2D2A26]">
+                LEETCODE_SESSION Cookie
+              </label>
+              <textarea
+                id="sessionCookie"
+                value={sessionCookie}
+                onChange={(e) => setSessionCookie(e.target.value)}
+                placeholder="Paste your LEETCODE_SESSION cookie value here..."
+                required
+                className={`${inputClasses} min-h-[80px] font-mono resize-none`}
+              />
+            </div>
 
-              {error && (
-                <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-lg text-sm">
-                  {error}
-                </div>
+            <div className="space-y-1.5">
+              <label htmlFor="csrfToken" className="text-sm font-medium text-[#2D2A26]">
+                csrftoken Cookie
+              </label>
+              <input
+                id="csrfToken"
+                type="text"
+                value={csrfToken}
+                onChange={(e) => setCsrfToken(e.target.value)}
+                placeholder="Paste your csrftoken cookie value here..."
+                required
+                className={`${inputClasses} font-mono`}
+              />
+            </div>
+
+            {error && (
+              <div className="px-4 py-3 rounded-xl bg-[#F5E8E8] border border-[#B85C5C]/15 text-[#B85C5C] text-sm">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-br from-[#5B8C5A] to-[#4A7349] text-white text-sm font-semibold shadow-md shadow-[#5B8C5A]/30 hover:shadow-lg hover:shadow-[#5B8C5A]/35 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 transition-all"
+            >
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Connecting...
+                </span>
+              ) : (
+                "Connect LeetCode Account"
               )}
+            </button>
+          </form>
+        </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Connecting..." : "Connect LeetCode Account"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        <p className="text-muted-foreground text-xs text-center">
+        <p className="text-[#A8A299] text-xs text-center">
           Your cookies are encrypted and stored securely. They are only used to fetch your LeetCode data.
         </p>
       </div>

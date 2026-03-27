@@ -270,6 +270,12 @@ input[type="text"]::placeholder {
   border: 1px solid rgba(91, 140, 90, 0.2);
 }
 
+.badge.review {
+  background: rgba(59, 130, 246, 0.1);
+  color: rgb(59, 130, 246);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
 .problem-meta {
   display: flex;
   align-items: center;

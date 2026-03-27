@@ -66,16 +66,25 @@ export async function GET() {
     });
 
     // Build the review list starting with never-reviewed
-    const reviewList: ReviewItem[] = neverReviewedProblems.map((problem) => ({
-      id: null,
-      slug: problem.slug,
-      title: problem.title,
-      difficulty: problem.difficulty,
-      tags: problem.tags,
-      lastReviewed: null,
-      intervalDays: 0,
-      isNew: true,
-    }));
+    // Track seen slugs to prevent any duplicates
+    const seenSlugs = new Set<string>();
+    const reviewList: ReviewItem[] = [];
+
+    for (const problem of neverReviewedProblems) {
+      if (!seenSlugs.has(problem.slug)) {
+        seenSlugs.add(problem.slug);
+        reviewList.push({
+          id: null,
+          slug: problem.slug,
+          title: problem.title,
+          difficulty: problem.difficulty,
+          tags: problem.tags,
+          lastReviewed: null,
+          intervalDays: 0,
+          isNew: true,
+        });
+      }
+    }
 
     // Calculate remaining slots for due reviews
     const remainingSlots = user.dailyGoal - completedToday - reviewList.length;
@@ -91,25 +100,29 @@ export async function GET() {
           include: {
             problem: true,
           },
-          orderBy: {
-            nextReviewAt: "asc",
-          },
+          orderBy: [
+            { nextReviewAt: "asc" },
+            { problem: { slug: "asc" } },
+          ],
           take: remainingSlots,
         })
       : [];
 
-    // Add due reviews to the list
+    // Add due reviews to the list (skip if already seen)
     for (const p of dueProblems) {
-      reviewList.push({
-        id: p.id,
-        slug: p.problem.slug,
-        title: p.problem.title,
-        difficulty: p.problem.difficulty,
-        tags: p.problem.tags,
-        lastReviewed: p.lastReviewed,
-        intervalDays: p.intervalDays,
-        isNew: false,
-      });
+      if (!seenSlugs.has(p.problem.slug)) {
+        seenSlugs.add(p.problem.slug);
+        reviewList.push({
+          id: p.id,
+          slug: p.problem.slug,
+          title: p.problem.title,
+          difficulty: p.problem.difficulty,
+          tags: p.problem.tags,
+          lastReviewed: p.lastReviewed,
+          intervalDays: p.intervalDays,
+          isNew: false,
+        });
+      }
     }
 
     // Calculate total (never show "4/2" if exceeded goal)

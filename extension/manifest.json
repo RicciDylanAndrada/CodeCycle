@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "LeetCode Spaced Repetition - Review problems at optimal intervals",
   "permissions": ["cookies", "storage"],
-  "host_permissions": ["https://leetcode.com/*", "http://localhost:3000/*"],
+  "host_permissions": ["https://leetcode.com/*", "http://localhost:3001/*"],
   "action": {
     "default_popup": "popup.html"
   },

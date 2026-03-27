@@ -7,7 +7,6 @@ export interface AuthUser {
   leetUsername: string;
   dailyGoal: number;
   maxNewPerDay: number;
-  defaultInterval: number;
   sessionCookie: string;
   csrfToken: string;
 }
@@ -34,7 +33,6 @@ export const getAuthUser = async (): Promise<AuthUser | null> => {
       leetUsername: user.leetUsername,
       dailyGoal: user.dailyGoal,
       maxNewPerDay: user.maxNewPerDay,
-      defaultInterval: user.defaultInterval,
       sessionCookie: decrypt(user.sessionCookie),
       csrfToken: decrypt(user.csrfToken),
     };

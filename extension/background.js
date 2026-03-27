@@ -1,6 +1,6 @@
 // Background service worker for CodeCycle extension
 
-const API_BASE = "http://localhost:3000"; // Change to production URL when deployed
+const API_BASE = "http://localhost:3001"; // Change to production URL when deployed
 
 // Get LeetCode cookies
 async function getLeetCodeCookies() {
@@ -21,7 +21,6 @@ async function getLeetCodeCookies() {
 
 // Get LeetCode username from cookies or storage
 async function getLeetCodeUsername() {
-  // Try to get from storage first
   const stored = await chrome.storage.local.get(["leetUsername"]);
   if (stored.leetUsername) {
     return stored.leetUsername;
@@ -34,15 +33,32 @@ async function saveUsername(username) {
   await chrome.storage.local.set({ leetUsername: username });
 }
 
-// API calls
+// Get stored userId
+async function getUserId() {
+  const stored = await chrome.storage.local.get(["userId"]);
+  return stored.userId || null;
+}
+
+// Save userId to storage
+async function saveUserId(userId) {
+  await chrome.storage.local.set({ userId });
+}
+
+// API calls — sends userId via header since extension can't use cookies
 async function apiCall(endpoint, options = {}) {
+  const userId = await getUserId();
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers
+  };
+
+  if (userId) {
+    headers["x-user-id"] = userId;
+  }
+
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers
-    },
-    credentials: "include"
+    headers
   });
   return response;
 }
@@ -70,7 +86,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       body: JSON.stringify(request.data)
     })
       .then(res => res.json())
-      .then(sendResponse)
+      .then(async (data) => {
+        if (data.userId) {
+          await saveUserId(data.userId);
+        }
+        sendResponse(data);
+      })
       .catch(err => sendResponse({ error: err.message }));
     return true;
   }

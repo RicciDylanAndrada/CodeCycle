@@ -27,7 +27,11 @@ const ProblemCard = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <h3 className="font-medium truncate">{title}</h3>
-              {isNew && <Badge variant="outline">New</Badge>}
+              {isNew ? (
+                <Badge variant="outline" className="border-green-500 text-green-600">New</Badge>
+              ) : (
+                <Badge variant="outline" className="border-blue-500 text-blue-600">Review</Badge>
+              )}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <DifficultyBadge difficulty={difficulty} />

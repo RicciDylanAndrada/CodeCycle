@@ -25,6 +25,7 @@ const elements = {
   problemDifficulty: document.getElementById("problem-difficulty"),
   problemTags: document.getElementById("problem-tags"),
   newBadge: document.getElementById("new-badge"),
+  reviewBadge: document.getElementById("review-badge"),
   openProblem: document.getElementById("open-problem"),
   syncBtn: document.getElementById("sync-btn"),
   doneBtn: document.getElementById("done-btn"),
@@ -159,8 +160,10 @@ function showCurrentProblem() {
 
   if (problem.isNew) {
     elements.newBadge.classList.remove("hidden");
+    elements.reviewBadge.classList.add("hidden");
   } else {
     elements.newBadge.classList.add("hidden");
+    elements.reviewBadge.classList.remove("hidden");
   }
 
   elements.openProblem.href = `https://leetcode.com/problems/${problem.slug}/`;
