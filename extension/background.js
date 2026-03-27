@@ -1,6 +1,6 @@
 // Background service worker for CodeCycle extension
 
-const API_BASE = "http://localhost:3001"; // Change to production URL when deployed
+const API_BASE = "https://codecycle.vercel.app";
 
 // Get LeetCode cookies
 async function getLeetCodeCookies() {

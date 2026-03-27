@@ -5,17 +5,18 @@
 CodeCycle syncs your solved LeetCode problems and builds a daily review queue using a spaced repetition algorithm. You see problems again at optimal intervals (like Anki flashcards) so patterns stick instead of fading after a few weeks.
 
 ---
+
 <img width="346" height="426" alt="Screenshot 2026-02-22 at 8 14 34 AM" src="https://github.com/user-attachments/assets/f7a158ed-da4d-49d9-a5b5-63030a77125f" />
 <img width="497" height="627" alt="Screenshot 2026-02-22 at 8 14 50 AM" src="https://github.com/user-attachments/assets/c73f6d6b-22e8-40c1-a90f-26c4e8729e9d" />
 
 ## Summary
 
-| | Anki | CodeCycle |
-|---|------|-----------|
-| **Content** | Flashcards | LeetCode problems you’ve solved |
+|              | Anki                                  | CodeCycle                                              |
+| ------------ | ------------------------------------- | ------------------------------------------------------ |
+| **Content**  | Flashcards                            | LeetCode problems you’ve solved                        |
 | **Schedule** | Spaced repetition (again, good, easy) | Spaced repetition (failed, struggled, solved, instant) |
-| **Source** | You create cards | Synced from your LeetCode account |
-| **Goal** | Long-term retention of facts | Long-term retention of patterns & interview readiness |
+| **Source**   | You create cards                      | Synced from your LeetCode account                      |
+| **Goal**     | Long-term retention of facts          | Long-term retention of patterns & interview readiness  |
 
 - **Login:** You paste LeetCode session cookies (no official OAuth). The app stores them encrypted and never sends them to the client.
 - **Sync:** Fetches your solved problems via LeetCode’s GraphQL API and stores them in PostgreSQL.
@@ -98,7 +99,7 @@ flowchart LR
     R4 --> N4
 ```
 
-Formula: `nextReviewAt = today + newIntervalDays`. First review uses a default interval (e.g. 7 days) when the problem enters the queue.
+Formula: `nextReviewAt = today + newIntervalDays`. First review starts with an interval of 1 day when the problem enters the queue.
 
 ### Data model (conceptual)
 
@@ -113,7 +114,6 @@ erDiagram
         string csrfToken
         int dailyGoal
         int maxNewPerDay
-        int defaultInterval
     }
     Problem {
         uuid id
@@ -179,10 +179,17 @@ The Chrome extension provides a quick way to review problems without opening the
 
 ### Installation
 
-1. Open Chrome and go to `chrome://extensions/`
-2. Enable **Developer mode** (toggle in top right)
-3. Click **Load unpacked**
-4. Select the `extension` folder from this project
+**Chrome Web Store** (pending review — typically 1-3 business days):
+
+Once approved, install directly from the Chrome Web Store (link coming soon).
+
+**Manual install** (available now):
+
+1. Download or clone this repo
+2. Open Chrome and go to `chrome://extensions/`
+3. Enable **Developer mode** (toggle in top right)
+4. Click **Load unpacked**
+5. Select the `extension` folder from this project
 
 ### Usage
 
@@ -218,6 +225,7 @@ extension/
 ### Development
 
 After making changes to extension files:
+
 1. Go to `chrome://extensions/`
 2. Click the refresh icon (🔄) on CodeCycle
 3. Click the extension to see changes
@@ -226,13 +234,13 @@ After making changes to extension files:
 
 ## Scripts
 
-| Command | Purpose |
-|--------|---------|
-| `npm run dev` | Start Next.js dev server |
-| `npm run build` | Production build |
-| `npm run start` | Run production server |
-| `npx prisma migrate dev` | Apply migrations |
-| `npx prisma studio` | Open Prisma Studio |
+| Command                  | Purpose                  |
+| ------------------------ | ------------------------ |
+| `npm run dev`            | Start Next.js dev server |
+| `npm run build`          | Production build         |
+| `npm run start`          | Run production server    |
+| `npx prisma migrate dev` | Apply migrations         |
+| `npx prisma studio`      | Open Prisma Studio       |
 
 ---
 
@@ -243,4 +251,3 @@ After making changes to extension files:
 - Use HTTPS in production and rotate cookies if you suspect compromise.
 
 ---
-
