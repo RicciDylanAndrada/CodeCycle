@@ -28,10 +28,21 @@ const ReviewPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [error, setError] = useState("");
+  const [filters, setFilters] = useState<{ difficulties: string[]; tags: string[] } | null>(null);
 
   useEffect(() => {
     const fetchReview = async () => {
       try {
+        // Read filters from sessionStorage
+        const storedFilters = sessionStorage.getItem("reviewFilters");
+        let parsedFilters: { difficulties: string[]; tags: string[] } | null = null;
+
+        if (storedFilters) {
+          parsedFilters = JSON.parse(storedFilters);
+          setFilters(parsedFilters);
+          sessionStorage.removeItem("reviewFilters");
+        }
+
         const res = await fetch("/api/review/today");
         if (res.status === 401) {
           router.push("/login");
@@ -39,11 +50,31 @@ const ReviewPage = () => {
         }
         const data = await res.json();
 
-        setProblems(data.remaining || []);
+        let problems = data.remaining || [];
+
+        // Apply filters if selected
+        if (parsedFilters) {
+          if (parsedFilters.difficulties && parsedFilters.difficulties.length > 0) {
+            problems = problems.filter((p: { difficulty: string }) =>
+              parsedFilters.difficulties.some(
+                (d) => d.toLowerCase() === p.difficulty.toLowerCase()
+              )
+            );
+          }
+          if (parsedFilters.tags && parsedFilters.tags.length > 0) {
+            problems = problems.filter((p: { tags: string[] }) =>
+              parsedFilters.tags.every((tag: string) =>
+                p.tags.map((t) => t.toLowerCase()).includes(tag.toLowerCase())
+              )
+            );
+          }
+        }
+
+        setProblems(problems);
         setCompletedToday(data.completedToday || 0);
         setTotalProblems(data.total || 0);
 
-        if ((data.remaining || []).length === 0) {
+        if (problems.length === 0) {
           setCompleted(true);
         }
       } catch {

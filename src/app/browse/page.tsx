@@ -26,7 +26,7 @@ const BrowsePage = () => {
   useEffect(() => {
     const fetchProblems = async () => {
       try {
-        const res = await fetch("/api/leetcode/solved");
+        const res = await fetch("/api/problems");
         if (res.status === 401) {
           router.push("/login");
           return;
@@ -38,12 +38,12 @@ const BrowsePage = () => {
               slug: string;
               title: string;
               difficulty: string;
-              topicTags: { name: string }[];
+              tags: string[];
             }) => ({
               slug: p.slug,
               title: p.title,
               difficulty: p.difficulty,
-              tags: p.topicTags.map((t: { name: string }) => t.name),
+              tags: p.tags,
             })
           )
         );
