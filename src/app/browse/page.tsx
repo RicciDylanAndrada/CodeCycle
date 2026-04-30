@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import TopicAccordion from "@/components/TopicAccordion";
 import ModeToggle from "@/components/ThemeToggle";
 import Search from "@/components/BrowseSearch";
+import ReviewFilterDialog from "@/components/ReviewFilterDialog";
 
 interface Problem {
   slug: string;
@@ -22,6 +23,9 @@ const BrowsePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [availableDifficulties, setAvailableDifficulties] = useState<string[]>([]);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProblems = async () => {
@@ -32,21 +36,30 @@ const BrowsePage = () => {
           return;
         }
         const data = await res.json();
-        setProblems(
-          data.problems.map(
-            (p: {
-              slug: string;
-              title: string;
-              difficulty: string;
-              tags: string[];
-            }) => ({
-              slug: p.slug,
-              title: p.title,
-              difficulty: p.difficulty,
-              tags: p.tags,
-            })
-          )
+        const mappedProblems = data.problems.map(
+          (p: {
+            slug: string;
+            title: string;
+            difficulty: string;
+            tags: string[];
+          }) => ({
+            slug: p.slug,
+            title: p.title,
+            difficulty: p.difficulty,
+            tags: p.tags,
+          })
         );
+        setProblems(mappedProblems);
+
+        // Extract available difficulties and tags
+        const difficulties = new Set<string>();
+        const tags = new Set<string>();
+        mappedProblems.forEach((p: Problem) => {
+          difficulties.add(p.difficulty.toLowerCase());
+          p.tags.forEach((tag: string) => tags.add(tag.toLowerCase()));
+        });
+        setAvailableDifficulties(Array.from(difficulties));
+        setAvailableTags(Array.from(tags));
       } catch {
         setError("Failed to load problems");
       } finally {
@@ -56,6 +69,20 @@ const BrowsePage = () => {
 
     fetchProblems();
   }, [router]);
+
+  const handleStartPractice = (filters: { difficulties: string[]; tags: string[] }, count: number) => {
+    // Store filters and count in sessionStorage for the practice page
+    const sessionData = {
+      difficulties: filters.difficulties,
+      tags: filters.tags,
+      count,
+    };
+    sessionStorage.setItem("practiceSession", JSON.stringify(sessionData));
+    // Small delay to ensure sessionStorage is written before navigation
+    setTimeout(() => {
+      window.location.href = "/practice";
+    }, 50);
+  };
 
 
   const allTags = new Set<string>();
@@ -149,10 +176,15 @@ const BrowsePage = () => {
               {filteredProblems.length} total problems
             </p>
           </div>
-          <ModeToggle />
-          <Button variant="default" asChild>
-            <Link href="/dashboard">← Back</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setFilterDialogOpen(true)}>
+              Filter Problems
+            </Button>
+            <ModeToggle />
+            <Button variant="default" asChild>
+              <Link href="/dashboard">← Back</Link>
+            </Button>
+          </div>
         </div>
 
         {error && (
@@ -188,6 +220,14 @@ const BrowsePage = () => {
             ))}
           </div>
         )}
+
+        <ReviewFilterDialog
+          open={filterDialogOpen}
+          onOpenChange={setFilterDialogOpen}
+          onStartPractice={handleStartPractice}
+          availableDifficulties={availableDifficulties}
+          availableTags={availableTags}
+        />
       </div>
     </div>
   );

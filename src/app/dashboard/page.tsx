@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import ModeToggle from "@/components/ThemeToggle";
-import ReviewFilterDialog from "@/components/ReviewFilterDialog";
 
 interface ReviewData {
   date: string;
@@ -39,9 +38,6 @@ const DashboardPage = () => {
   const [savingSettings, setSavingSettings] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [error, setError] = useState("");
-  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
-  const [availableDifficulties, setAvailableDifficulties] = useState<string[]>([]);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
 
   const settingsChanged = localSettings && settings && (
     localSettings.dailyGoal !== settings.dailyGoal ||
@@ -53,10 +49,9 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [reviewRes, settingsRes, problemsRes] = await Promise.all([
+        const [reviewRes, settingsRes] = await Promise.all([
           fetch("/api/review/today"),
           fetch("/api/review/settings"),
-          fetch("/api/problems"),
         ]);
 
         if (reviewRes.status === 401 || settingsRes.status === 401) {
@@ -64,28 +59,16 @@ const DashboardPage = () => {
           return;
         }
 
-        const [review, settingsData, problemsData] = await Promise.all([
+        const [review, settingsData] = await Promise.all([
           reviewRes.json(),
           settingsRes.json(),
-          problemsRes.json(),
         ]);
 
         setReviewData(review);
         setSettings(settingsData);
         setLocalSettings(settingsData);
 
-        // Extract available difficulties and tags from problems
-        const difficulties = new Set<string>();
-        const tags = new Set<string>();
-        if (problemsData.problems) {
-          problemsData.problems.forEach((p: { difficulty: string; tags: string[] }) => {
-            difficulties.add(p.difficulty);
-            p.tags.forEach((tag: string) => tags.add(tag));
-          });
-        }
-        setAvailableDifficulties(Array.from(difficulties));
-        setAvailableTags(Array.from(tags));
-      } catch {
+              } catch {
         setError("Failed to load dashboard");
       } finally {
         setLoading(false);
@@ -117,12 +100,6 @@ const DashboardPage = () => {
    const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
-  };
-
-  const handleStartReview = (filters: { difficulties: string[]; tags: string[] }) => {
-    // Store filters in sessionStorage to be used by the review page
-    sessionStorage.setItem("reviewFilters", JSON.stringify(filters));
-    router.push("/review");
   };
 
 const handleSaveSettings = async () => {
@@ -208,18 +185,11 @@ const handleSaveSettings = async () => {
           </CardHeader>
           <CardContent>
             {reviewData && reviewData.remaining.length > 0 ? (
-              <>
-                <Button onClick={() => setFilterDialogOpen(true)}>
+              <Button asChild>
+                <Link href="/review">
                   {reviewData.completedToday > 0 ? "Continue Review" : "Start Review"}
-                </Button>
-                <ReviewFilterDialog
-                  open={filterDialogOpen}
-                  onOpenChange={setFilterDialogOpen}
-                  onStartReview={handleStartReview}
-                  availableDifficulties={availableDifficulties}
-                  availableTags={availableTags}
-                />
-              </>
+                </Link>
+              </Button>
             ) : (
               <p className="text-sm text-muted-foreground">
                 {reviewData && reviewData.completedToday > 0 ? "Great job! Check back tomorrow."
