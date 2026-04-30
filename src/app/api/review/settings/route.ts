@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth();
+
+    // Rate limit: 30 requests per minute (general)
+    const rateLimitResult = await checkRateLimit(request, "general");
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        {
+          status: 429,
+          headers: rateLimitResult.headers,
+        }
+      );
+    }
 
     return NextResponse.json({
       dailyGoal: user.dailyGoal,
@@ -24,6 +37,18 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Rate limit: 20 requests per minute (prevent spam)
+    const rateLimitResult = await checkRateLimit(request, "review");
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        {
+          status: 429,
+          headers: rateLimitResult.headers,
+        }
+      );
+    }
+
     const user = await requireAuth();
     const body = await request.json();
     const { dailyGoal, maxNewPerDay, defaultInterval } = body;

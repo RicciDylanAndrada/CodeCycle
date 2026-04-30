@@ -58,13 +58,17 @@ const DashboardPage = () => {
           router.push("/login");
           return;
         }
-
+        if (!reviewRes.ok) {
+          setError("Failed to load review data");
+          setLoading(false);
+          return;
+        }
         const [review, settingsData] = await Promise.all([
           reviewRes.json(),
           settingsRes.json(),
         ]);
-
-        setReviewData(review);
+        
+        setReviewData({ ...review, remaining: review.remaining ?? [] });
         setSettings(settingsData);
         setLocalSettings(settingsData);
 

@@ -2,9 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { calculateNextReview, ReviewResult } from "@/lib/spacedRepetition";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 20 requests per minute (prevent spam)
+    const rateLimitResult = await checkRateLimit(request, "review");
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many review submissions. Please slow down." },
+        {
+          status: 429,
+          headers: rateLimitResult.headers,
+        }
+      );
+    }
+
     const user = await requireAuth();
     const body = await request.json();
     const { slug, result } = body;

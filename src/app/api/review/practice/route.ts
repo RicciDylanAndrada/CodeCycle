@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 interface PracticeRequest {
   difficulties: string[];
@@ -10,8 +11,22 @@ interface PracticeRequest {
 
 export async function POST(req: Request) {
   try {
+    const request = req as NextRequest;
+
+    // Rate limit: 20 requests per minute (prevent spam)
+    const rateLimitResult = await checkRateLimit(request, "review");
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        {
+          status: 429,
+          headers: rateLimitResult.headers,
+        }
+      );
+    }
+
     const user = await requireAuth();
-    const body: PracticeRequest = await req.json();
+    const body: PracticeRequest = await request.json();
     const { difficulties, tags, count } = body;
 
     if (!count || count < 1 || count > 50) {

@@ -1,11 +1,24 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { fetchSolvedProblems } from "@/lib/leetcodeClient";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth();
+
+    // Rate limit: 10 requests per minute (LeetCode API protection)
+    const rateLimitResult = await checkRateLimit(request, "leetcode");
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many sync requests. Please wait a moment." },
+        {
+          status: 429,
+          headers: rateLimitResult.headers,
+        }
+      );
+    }
 
     const solvedProblems = await fetchSolvedProblems(user.leetUsername, {
       sessionCookie: user.sessionCookie,

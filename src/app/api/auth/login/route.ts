@@ -3,9 +3,22 @@ import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/encryption";
 import { validateCredentials } from "@/lib/leetcodeClient";
 import { cookies } from "next/headers";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 requests per minute (brute-force protection)
+    const rateLimitResult = await checkRateLimit(request, "auth");
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again later." },
+        {
+          status: 429,
+          headers: rateLimitResult.headers,
+        }
+      );
+    }
+
     const body = await request.json();
     const { username, sessionCookie, csrfToken } = body;
 

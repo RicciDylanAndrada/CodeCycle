@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 interface ReviewItem {
   id: string | null;
@@ -13,9 +14,21 @@ interface ReviewItem {
   isNew: boolean;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const user = await requireAuth();
+
+    // Rate limit: 30 requests per minute (general)
+    const rateLimitResult = await checkRateLimit(request, "general");
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        {
+          status: 429,
+          headers: rateLimitResult.headers,
+        }
+      );
+    }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
