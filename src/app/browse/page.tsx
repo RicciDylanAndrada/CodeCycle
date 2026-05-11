@@ -152,7 +152,7 @@ const BrowsePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6">
         <h1 className="text-5xl font-bold text-primary">CodeCycle</h1>
         <div className="flex items-center gap-3">
           <span className="w-6 h-6 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
@@ -165,7 +165,7 @@ const BrowsePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <div>

@@ -146,7 +146,7 @@ const handleSaveSettings = async () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6">
           <h1 className="text-5xl text-primaryfont-bold">CodeCycle</h1>
         <div className="flex items-center gap-3">
           <span className="w-6 h-6 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
@@ -157,7 +157,7 @@ const handleSaveSettings = async () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen p-6">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -189,7 +189,7 @@ const handleSaveSettings = async () => {
           </CardHeader>
           <CardContent>
             {reviewData && reviewData.remaining.length > 0 ? (
-              <Button asChild>
+              <Button asChild className="rounded-xl bg-gradient-to-br from-[#5B8C5A] to-[#4A7349] text-white hover:shadow-lg hover:shadow-[#5B8C5A]/35">
                 <Link href="/review">
                   {reviewData.completedToday > 0 ? "Continue Review" : "Start Review"}
                 </Link>
@@ -209,7 +209,7 @@ const handleSaveSettings = async () => {
             <CardDescription>Fetch your solved problems from LeetCode</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="default" onClick={handleSync} disabled={syncing}>
+            <Button onClick={handleSync} disabled={syncing} className="rounded-xl bg-gradient-to-br from-[#5B8C5A] to-[#4A7349] text-white hover:shadow-lg hover:shadow-[#5B8C5A]/35">
               {syncing ? (
                 <>
                 <span className="inline-block w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -229,7 +229,7 @@ const handleSaveSettings = async () => {
             <CardDescription>View all your problems organized by topic</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="default" asChild>
+            <Button asChild className="rounded-xl bg-gradient-to-br from-[#5B8C5A] to-[#4A7349] text-white hover:shadow-lg hover:shadow-[#5B8C5A]/35">
               <Link href="/browse">Browse All</Link>
             </Button>
           </CardContent>

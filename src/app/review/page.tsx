@@ -134,7 +134,7 @@ const ReviewPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6">
           <h1 className="text-5xl text-primaryfont-bold">CodeCycle</h1>
         <div className="flex items-center gap-3">
           <span className="w-6 h-6 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
@@ -168,7 +168,7 @@ const ReviewPage = () => {
   const currentProblem = problems[currentIndex];
 
    return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="container mx-auto p-4 mb-4 flex items-center justify-between">
       <h1 className="text-3xl font-bold text-primary"> CodeCycle </h1>
       <ModeToggle />
