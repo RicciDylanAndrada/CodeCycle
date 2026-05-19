@@ -86,9 +86,9 @@
 }
 
 .dark {
-  --background: rgba(40, 40, 40, 0.719); /*changed*/
-  --gradient-start: #1a1a1a;
-  --gradient-end: #111111;
+--background: oklch(0.18 0.01 60);
+--gradient-start: #1C1A17;
+--gradient-end: #252220;
   --foreground: oklch(0.145 0 0);
   --card: rgb(44, 44, 44); /*changed*/
   --card-foreground: oklch(0.985 0 0);

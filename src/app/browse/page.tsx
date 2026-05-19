@@ -85,38 +85,36 @@ const BrowsePage = () => {
   };
 
 
-  const allTags = new Set<string>();
-  const allDifficulties = new Set<string>();
+    const allTags = new Set<string>();
+    const allDifficulties = new Set<string>();
 
-  problems.forEach((problem) => {
-    allDifficulties.add(problem.difficulty.toLowerCase());
-    problem.tags.forEach((tag) => allTags.add(tag.toLowerCase()));
-  });
+    problems.forEach((problem) => {
+      allDifficulties.add( problem.difficulty.toLowerCase() );
+      problem.tags.forEach((tag) => allTags.add(tag.toLowerCase()));
+    });
 
-  const toTitleCase = (str: string) =>
-  str.replace(/\w\S*/g, (txt) =>
-    txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
-  );
+  const selectedDifficulties = selectedFilters.filter(f => allDifficulties.has(f));
+  const selectedTags = selectedFilters.filter(f => allTags.has(f));
 
-  const filterOptions = [
-    ...Array.from(allDifficulties).map((difficulty) => ({
-      value: difficulty,
-      label: toTitleCase(difficulty),
-    })),
-    ...Array.from(allTags).map((tag) => ({
-      value: tag,
-      label: toTitleCase(tag),
-    })),
-  ];
+    const toTitleCase = (str: string) =>
+      str.replace(/\w\S*/g, (txt) =>
+        txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
+      );
+
+    const filterOptions = [
+      ...Array.from(allDifficulties).map((difficulty) => ({
+        value: difficulty,
+        label: toTitleCase(difficulty),
+      })),
+      ...Array.from(allTags).map((tag) => ({
+        value: tag,
+        label: toTitleCase(tag),
+      })),
+    ];
 
 
-  const difficultyFilters = selectedFilters.filter((filter) =>
-    allDifficulties.has(filter)
-  );
-
-  const tagFilters = selectedFilters.filter((filter) =>
-    allTags.has(filter)
-  );
+  const difficultyFilters = selectedDifficulties;
+  const tagFilters = selectedTags;
 
   const filteredProblems =
     selectedFilters.length === 0
@@ -177,8 +175,8 @@ const BrowsePage = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => setFilterDialogOpen(true)}>
-              Filter Problems
+            <Button variant="default" onClick={() => setFilterDialogOpen(true)}>
+              Practice Problems
             </Button>
             <ModeToggle />
             <Button variant="default" asChild>
@@ -222,12 +220,12 @@ const BrowsePage = () => {
         )}
 
         <ReviewFilterDialog
-          open={filterDialogOpen}
-          onOpenChange={setFilterDialogOpen}
-          onStartPractice={handleStartPractice}
-          availableDifficulties={availableDifficulties}
-          availableTags={availableTags}
-        />
+    open={filterDialogOpen}
+    onOpenChange={setFilterDialogOpen}
+    onStartPractice={handleStartPractice}
+    availableDifficulties={availableDifficulties}
+    availableTags={availableTags}
+  />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -41,20 +41,22 @@ const ReviewFilterDialog = ({
   const [step, setStep] = useState<Step>("filters");
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [problemCount, setProblemCount] = useState<number>(5);
+  const [problemCount, setProblemCount] = useState<number>(5); // Start with 5
 
-  const handleDifficultyToggle = (difficulty: string) => {
-    setSelectedDifficulties((prev) =>
+const countOptions = [5, 10, 15, 20, 25, 30];
+
+const handleDifficultyToggle = (difficulty: string) => {
+    setSelectedDifficulties(prev =>
       prev.includes(difficulty)
-        ? prev.filter((d) => d !== difficulty)
+        ? prev.filter(d => d !== difficulty)
         : [...prev, difficulty]
     );
   };
 
   const handleTagToggle = (tag: string) => {
-    setSelectedTags((prev) =>
+    setSelectedTags(prev =>
       prev.includes(tag)
-        ? prev.filter((t) => t !== tag)
+        ? prev.filter(t => t !== tag)
         : [...prev, tag]
     );
   };
@@ -85,8 +87,9 @@ const ReviewFilterDialog = ({
     setStep("filters");
     setSelectedDifficulties([]);
     setSelectedTags([]);
-    setProblemCount(5);
+    setProblemCount(5); // Reset to 5 instead of countOptions[0]
   };
+  
 
   const handleClose = () => {
     handleReset();
@@ -94,8 +97,6 @@ const ReviewFilterDialog = ({
   };
 
   const hasActiveFilters = selectedDifficulties.length > 0 || selectedTags.length > 0;
-
-  const countOptions = [5, 10, 15, 20, 25, 30];
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -121,7 +122,9 @@ const ReviewFilterDialog = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setSelectedDifficulties([])}
+                    onClick={() => {
+                      selectedDifficulties.forEach(difficulty => handleDifficultyToggle(difficulty));
+                    }}
                     className="h-auto px-2 py-1 text-xs"
                   >
                     Clear
@@ -177,7 +180,9 @@ const ReviewFilterDialog = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setSelectedTags([])}
+                    onClick={() => {
+                      selectedTags.forEach(tag => handleTagToggle(tag));
+                    }}
                     className="h-auto px-2 py-1 text-xs"
                   >
                     Clear
@@ -230,8 +235,8 @@ const ReviewFilterDialog = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        setSelectedDifficulties([]);
-                        setSelectedTags([]);
+                        selectedDifficulties.forEach(difficulty => handleDifficultyToggle(difficulty));
+                        selectedTags.forEach(tag => handleTagToggle(tag));
                       }}
                       className="h-auto px-2 py-1 text-xs"
                     >

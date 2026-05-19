@@ -18,25 +18,25 @@ export default function SwitchDemo(){
 
   return (
     <form>
-      <div className="flex items-center">
+      <div className="flex items-center space-x-3">
         <label
-          className="pr-[15px] text-[15px] leading-none text-muted-foreground"
-          htmlFor="theme-mode"
+          className="text-sm font-medium text-muted-foreground"
+          htmlFor="theme-toggle"
         >
-          {isDark ? "Dark Mode" : "Light Mode"}
+          Appearance
         </label>
 
         <Switch.Root
-          id="theme-mode"
+          id="theme-toggle"
           checked={isDark}
           onCheckedChange={(checked) =>
             setTheme(checked ? "dark" : "light")
           }
-          className="relative h-[25px] w-[50px] cursor-pointer rounded-full bg-blackA6 shadow-[0_2px_10px] shadow-blackA4 focus:shadow-[0_0_0_2px] focus:shadow-black data-[state=checked]:bg-black"
+          className="relative h-[11px] w-[36px] cursor-pointer rounded-full bg-gray-200 dark:bg-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors duration-200 data-[state=checked]:bg-black"
           style={{ WebkitTapHighlightColor: "rgba(0,0,0,0)" }}
         >
           <Switch.Thumb
-            className="block size-[21px] translate-x-0.5 rounded-full bg-white shadow-[0_2px_2px] shadow-blackA4 transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[28px]"
+            className="block h-[11.5px] w-[12px] rounded-full bg-white shadow-lg transform transition-transform duration-200 data-[state=checked]:translate-x-[24px] data-[state=unchecked]:translate-x-0"
           />
         </Switch.Root>
       </div>

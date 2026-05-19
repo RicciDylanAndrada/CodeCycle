@@ -35,3 +35,16 @@ Follow these rules when you write code:
 - Use descriptive variable and function/const names. Also, event functions should be named with a “handle” prefix, like “handleClick” for onClick and “handleKeyDown” for onKeyDown.
 - Implement accessibility features on elements. For example, a tag should have a tabindex=“0”, aria-label, on:click, and on:keydown, and similar attributes.
 - Use consts instead of functions, for example, “const toggle = () =>”. Also, define a type if possible.
+
+
+### Note-Taking
+
+The user will signal the end of the session with the phrase "record session changes"
+
+-when user enters these key words, recount all the code changes that were made question-by-question of what the user asks of you to do
+-as if you are a senior developer that wants to teach a new grad helpful tips and tricks when landing an entry level job in developer or software engineer
+-note-taking in the format as below: 
+    - Question aiming to solve
+    - Approach to get the solution
+    - Explanation of the solution in detail so that it is helpful to an aspiring developer / software engineer
+    - Additional Comments that want to include
